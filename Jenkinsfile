@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -36,9 +37,8 @@ pipeline {
             steps {
                 bat '''
                     @echo off
-
                     echo ===== Java =====
-                    java -version
+                    "%JAVA_HOME%/bin/java.exe" -version
                     if errorlevel 1 exit /b 1
 
                     echo.
@@ -76,12 +76,12 @@ pipeline {
                         @echo off
                         echo JAVA_HOME=%JAVA_HOME%
 
-                        if not exist "%JAVA_HOME%\bin\java.exe" (
+                        if not exist "%JAVA_HOME%/bin/java.exe" (
                             echo ERROR: Java was not found at JAVA_HOME.
                             exit /b 1
                         )
 
-                        "%JAVA_HOME%\bin\java.exe" -version
+                        "%JAVA_HOME%/bin/java.exe" -version
                         call mvnw.cmd clean package -DskipTests
 
                         if errorlevel 1 (
@@ -204,27 +204,22 @@ pipeline {
                     whoami
 
                     Write-Host ""
-
                     Write-Host "Docker executable:"
                     Get-Command docker
 
                     Write-Host ""
-
                     Write-Host "Windows user profile:"
                     Write-Host $env:USERPROFILE
 
                     Write-Host ""
-
                     Write-Host "Docker configuration path:"
                     Write-Host $env:DOCKER_CONFIG
 
                     Write-Host ""
-
                     Write-Host "Docker contexts:"
                     docker context ls
 
                     Write-Host ""
-
                     docker version
 
                     if ($LASTEXITCODE -ne 0) {
@@ -257,11 +252,8 @@ pipeline {
                         }
 
                         Write-Host "Docker Hub username: $env:DOCKER_USERNAME"
-                        Write-Host "Docker Hub PAT length: $($env:DOCKER_PASSWORD.Length)"
 
-                        $tempFile = Join-Path `
-                            $env:TEMP `
-                            "docker-pat-$PID.txt"
+                        $tempFile = Join-Path $env:TEMP "docker-pat-$PID.txt"
 
                         try {
                             [System.IO.File]::WriteAllText(
@@ -272,8 +264,8 @@ pipeline {
 
                             docker logout 2>$null
 
-                            cmd.exe /D /S /C `
-                                "type `"$tempFile`" | docker login --username $env:DOCKER_USERNAME --password-stdin"
+                            Get-Content -Raw $tempFile |
+                                docker login --username $env:DOCKER_USERNAME --password-stdin
 
                             if ($LASTEXITCODE -ne 0) {
                                 throw "Docker Hub login failed."
@@ -407,9 +399,7 @@ pipeline {
 
                     Write-Host "Checking backend JWT environment variables..."
 
-                    $jwtExpiration = docker exec `
-                        smartims-backend `
-                        printenv JWT_EXPIRATION
+                    $jwtExpiration = docker exec smartims-backend printenv JWT_EXPIRATION
 
                     if ($LASTEXITCODE -ne 0) {
                         throw "Unable to read JWT_EXPIRATION from backend container."
@@ -421,9 +411,7 @@ pipeline {
 
                     Write-Host "JWT_EXPIRATION is configured."
 
-                    $jwtSecret = docker exec `
-                        smartims-backend `
-                        printenv JWT_SECRET
+                    $jwtSecret = docker exec smartims-backend printenv JWT_SECRET
 
                     if ($LASTEXITCODE -ne 0) {
                         throw "Unable to read JWT_SECRET from backend container."
@@ -458,7 +446,6 @@ pipeline {
                         Write-Host "Health URL: $healthUrl"
 
                         for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
-
                             Write-Host ""
                             Write-Host "Health check attempt $attempt of $maxAttempts"
 
