@@ -17,8 +17,8 @@ pipeline {
         JAVA_HOME = 'C:\\Program Files\\Java\\jdk-21.0.11'
         PATH = "${JAVA_HOME}\\bin;${env.PATH}"
 
-        BACKEND_IMAGE = 'akshaygouda646/smartims-backend'
-        FRONTEND_IMAGE = 'akshaygouda646/smartims-frontend'
+        BACKEND_IMAGE = 'hruthik16ks/smartims-backend'
+        FRONTEND_IMAGE = 'hruthik16ks/smartims-frontend'
         IMAGE_TAG = 'v1'
 
         BACKEND_HEALTH_URL = 'http://localhost:8081/actuator/health'
