@@ -14,8 +14,8 @@ pipeline {
     }
 
     environment {
-        JAVA_HOME = 'C:\\Program Files\\Java\\jdk-21.0.11'
-        PATH = "${JAVA_HOME}\\bin;${env.PATH}"
+        JAVA_HOME = 'C:/Program Files/Java/jdk-21.0.12'
+        PATH = "${JAVA_HOME}/bin;${env.PATH}"
 
         BACKEND_IMAGE = 'hruthik16ks/smartims-backend'
         FRONTEND_IMAGE = 'hruthik16ks/smartims-frontend'
@@ -74,7 +74,14 @@ pipeline {
                 dir('backend') {
                     bat '''
                         @echo off
+                        echo JAVA_HOME=%JAVA_HOME%
 
+                        if not exist "%JAVA_HOME%\bin\java.exe" (
+                            echo ERROR: Java was not found at JAVA_HOME.
+                            exit /b 1
+                        )
+
+                        "%JAVA_HOME%\bin\java.exe" -version
                         call mvnw.cmd clean package -DskipTests
 
                         if errorlevel 1 (
