@@ -102,7 +102,7 @@ pipeline {
                         bat '''
                             @echo off
 
-                            call mvnw.cmd sonar:sonar ^
+                            call mvnw.cmd org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar ^
                               -Dsonar.projectKey=smart-incident-management ^
                               "-Dsonar.projectName=Smart Incident Management Backend"
 
